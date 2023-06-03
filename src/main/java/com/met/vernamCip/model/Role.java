@@ -28,6 +28,12 @@ public class Role {
 
     @Column(name = "nameRole")
     private String role;
+    
+    @Column(name = "actionRole")
+    private int action;
+    
+    @Column(name = "maxSizeFileRole")
+    private float maxSizeFile;
 
     public int getId() {
         return id;
@@ -43,6 +49,22 @@ public class Role {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public int getAction() {
+        return action;
+    }
+
+    public void setAction(int action) {
+        this.action = action;
+    }
+
+    public float getMaxSizeFile() {
+        return maxSizeFile;
+    }
+
+    public void setMaxSizeFile(float maxSizeFile) {
+        this.maxSizeFile = maxSizeFile;
     }
     
     

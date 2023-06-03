@@ -5,7 +5,7 @@
  */
 package com.met.vernamCip.service;
 
-import com.met.vernamCip.model.File;
+import com.met.vernamCip.model.UserFile;
 import com.met.vernamCip.model.Key;
 
 /**
@@ -14,12 +14,12 @@ import com.met.vernamCip.model.Key;
  */
 public interface FileService {
     
-    public File getFile(long id);
+    public UserFile getFile(long id);
     
-    public void setFile(File f);
+    public void setFile(UserFile f);
     
-    public void encryptFile(File f, Key k);
+    public void encryptFile(UserFile f, Key k);
     
-    public void decryptFile(File f, Key k);
+    public void decryptFile(UserFile f, Key k);
     
 }

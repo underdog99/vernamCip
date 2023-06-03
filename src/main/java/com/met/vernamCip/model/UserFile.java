@@ -9,15 +9,15 @@ package com.met.vernamCip.model;
  *
  * @author Mladen
  */
-public class File {
+public class UserFile {
     
     private long id;
     private String name;
     private String ext;
     private float size;
-    private String raw;
+    private String fullName;
 
-    public File() {
+    public UserFile() {
     }
 
     public long getId() {
@@ -52,14 +52,14 @@ public class File {
         this.size = size;
     }
 
-    public String getRaw() {
-        return raw;
+    public String getFullName() {
+        return fullName;
     }
 
-    public void setRaw(String raw) {
-        this.raw = raw;
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
-    
+
     
     
 }
