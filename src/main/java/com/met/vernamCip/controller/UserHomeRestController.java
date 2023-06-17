@@ -5,7 +5,6 @@
  */
 package com.met.vernamCip.controller;
 
-import com.met.vernamCip.model.User;
 import com.met.vernamCip.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -25,10 +24,9 @@ public class UserHomeRestController {
     private UserService userService;
     
     @GetMapping("/user/home")
-    public String homePage(){
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User u = userService.findUserByEmail(auth.getName());
+    public String homePage(Authentication authentication){
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         
-        return u.getEmail();
+        return "Welcome, " + username + "!";
     }
 }
