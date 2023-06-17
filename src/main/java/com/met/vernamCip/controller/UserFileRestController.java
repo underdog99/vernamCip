@@ -6,23 +6,29 @@
 package com.met.vernamCip.controller;
 
 import com.met.vernamCip.conf.FileHandler;
+import com.met.vernamCip.convert.UserFileConverter;
+import com.met.vernamCip.convert.UserKeyConverter;
+import com.met.vernamCip.dto.UserRequestBody;
 import com.met.vernamCip.model.Key;
 import com.met.vernamCip.model.Role;
 import com.met.vernamCip.model.User;
 import com.met.vernamCip.model.UserFile;
 import com.met.vernamCip.service.FileService;
 import com.met.vernamCip.service.UserService;
-import java.io.File;
+import java.io.IOException;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
@@ -42,7 +48,21 @@ public class UserFileRestController {
     
 
     @PostMapping("/user/home/fileEncrypt")
-    public ResponseEntity<UserFile> getEncrypt(@RequestBody UserFile uf, @RequestBody Key k) {
+    public ResponseEntity<UserFile> getEncrypt(@RequestPart("file") MultipartFile file, @RequestPart("key") MultipartFile key) {
+        
+        //UserFile uf = reqBody.getUf();
+        //Key k = reqBody.getK();
+        
+        UserFile uf = null;
+        Key k = null;
+        try {
+            uf = UserFileConverter.convert(file);
+            k = UserKeyConverter.convert(key);
+        } catch (IOException ex) {
+            Logger.getLogger(UserFileRestController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        fileService.setFile(uf);    //Kreiranje i cuvanje fajla
         
         //---- Autentifikacija i autorizacija korisnika, provera role/paket usluge------
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -82,8 +102,11 @@ public class UserFileRestController {
     }
 
     @PostMapping("/user/home/fileDecrypt")
-    public ResponseEntity<UserFile> getDecrypt(@RequestBody UserFile uf, @RequestBody Key k) {
+    public ResponseEntity<UserFile> getDecrypt(@RequestBody UserRequestBody reqBody) {
 
+        UserFile uf = reqBody.getUf();
+        Key k = reqBody.getK();
+        
         //---- Autentifikacija i autorizacija korisnika, provera role/paket usluge------
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User u = userService.findUserByEmail(auth.getName());

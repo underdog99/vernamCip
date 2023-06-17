@@ -11,6 +11,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,7 +36,13 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public void setFile(UserFile f) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
+        Path dst = Path.of(f.getName());
+        try {
+            Files.write(dst, f.getData());
+        } catch (IOException ex) {
+            Logger.getLogger(FileServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @Override

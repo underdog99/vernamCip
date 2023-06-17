@@ -16,6 +16,7 @@ public class UserFile {
     private String ext;
     private float size;
     private String fullName;
+    private byte[] data;
 
     public UserFile() {
     }
@@ -58,6 +59,14 @@ public class UserFile {
 
     public void setFullName(String fullName) {
         this.fullName = fullName;
+    }
+
+    public byte[] getData() {
+        return data;
+    }
+
+    public void setData(byte[] data) {
+        this.data = data;
     }
 
     

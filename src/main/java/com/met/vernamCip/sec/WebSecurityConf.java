@@ -19,40 +19,40 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
  *
  * @author Mladen
  */
-
 @Configuration
 @EnableWebSecurity
-public class WebSecurityConf extends WebSecurityConfigurerAdapter{
-    
+public class WebSecurityConf extends WebSecurityConfigurerAdapter {
+
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
     private MyUserDetailsService userDetailsService;
-    
-    
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-
-        http.
-                authorizeRequests()
-                .antMatchers("/").permitAll()
-                .antMatchers("/login*").permitAll()
-                .antMatchers("/registration*").permitAll()
-                .antMatchers("/user/**", "/user/home/api/**").hasAnyAuthority("FREE", "STANDARD", "PRO").anyRequest()
-                .authenticated().and().formLogin()
-                .loginPage("/login").loginPage("/").failureUrl("/login?error=true")
+        http
+                .csrf().disable()
+                .authorizeRequests()
+                .antMatchers("/", "/login*", "/registration*").permitAll()
+                .antMatchers("/user/**", "/user/home/api/**").hasAnyAuthority("FREE", "STANDARD", "PRO")
+                .anyRequest().authenticated()
+                .and()
+                .formLogin()
+                .loginPage("/login")
+                .loginProcessingUrl("/login")
                 .defaultSuccessUrl("/user/home")
+                .failureUrl("/login?error=true")
                 .usernameParameter("email")
                 .passwordParameter("password")
-                .and().logout()
+                .and()
+                .logout()
                 .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-                .logoutSuccessUrl("/login").and().exceptionHandling().and().headers()
-                .frameOptions().sameOrigin()
-                //.and().csrf().disable();
-                .and().csrf().requireCsrfProtectionMatcher(new AntPathRequestMatcher("**/login"));
-                //.and().csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
-                
+                .logoutSuccessUrl("/login")
+                .and()
+                .exceptionHandling()
+                .and()
+                .headers().frameOptions().sameOrigin();
     }
 
     @Override
@@ -61,5 +61,5 @@ public class WebSecurityConf extends WebSecurityConfigurerAdapter{
                 .ignoring()
                 .antMatchers("/resources/**", "/static/**", "/css/**", "/js/**", "/images/**", "/error");
     }
-    
+
 }
