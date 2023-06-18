@@ -50,9 +50,6 @@ public class UserFileRestController {
     @PostMapping("/user/home/fileEncrypt")
     public ResponseEntity<UserFile> getEncrypt(@RequestPart("file") MultipartFile file, @RequestPart("key") MultipartFile key) {
         
-        //UserFile uf = reqBody.getUf();
-        //Key k = reqBody.getK();
-        
         UserFile uf = null;
         Key k = null;
         try {
@@ -102,10 +99,16 @@ public class UserFileRestController {
     }
 
     @PostMapping("/user/home/fileDecrypt")
-    public ResponseEntity<UserFile> getDecrypt(@RequestBody UserRequestBody reqBody) {
+    public ResponseEntity<UserFile> getDecrypt(@RequestPart("file") MultipartFile file, @RequestPart("key") MultipartFile key) {
 
-        UserFile uf = reqBody.getUf();
-        Key k = reqBody.getK();
+        UserFile uf = null;
+        Key k = null;
+        try {
+            uf = UserFileConverter.convert(file);
+            k = UserKeyConverter.convert(key);
+        } catch (IOException ex) {
+            Logger.getLogger(UserFileRestController.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
         //---- Autentifikacija i autorizacija korisnika, provera role/paket usluge------
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();

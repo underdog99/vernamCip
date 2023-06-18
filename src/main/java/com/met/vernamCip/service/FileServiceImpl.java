@@ -7,7 +7,6 @@ package com.met.vernamCip.service;
 
 import com.met.vernamCip.model.UserFile;
 import com.met.vernamCip.model.Key;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -15,7 +14,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -37,6 +35,7 @@ public class FileServiceImpl implements FileService {
     @Override
     public void setFile(UserFile f) {
         
+        // Cuvanje datoteke
         Path dst = Path.of(f.getName());
         try {
             Files.write(dst, f.getData());

@@ -18,7 +18,7 @@ public class UserFileConverter {
     public static UserFile convert(MultipartFile multipartFile) throws IOException {
         UserFile userFile = new UserFile();
 
-        userFile.setId(0);
+        userFile.setId(1000); //Set the ID as needed
         userFile.setName(multipartFile.getOriginalFilename());
         userFile.setExt(getFileExtension(multipartFile.getOriginalFilename()));
         userFile.setSize(multipartFile.getSize());

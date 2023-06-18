@@ -2,7 +2,7 @@
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
- */
+ 
 package com.met.vernamCip.conf;
 
 import org.springframework.context.annotation.Bean;
@@ -15,7 +15,8 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 /**
  *
  * @author Mladen
- */
+
+
 @Configuration
 @EnableWebSocket
 public class WebSocketConfig implements WebSocketConfigurer {
@@ -31,3 +32,5 @@ public class WebSocketConfig implements WebSocketConfigurer {
     }
 
 }
+
+*/
