@@ -48,58 +48,80 @@ public class UserFileRestController {
     
 
     @PostMapping("/user/home/fileEncrypt")
-    public ResponseEntity<UserFile> getEncrypt(@RequestPart("file") MultipartFile file, @RequestPart("key") MultipartFile key) {
-        
-        UserFile uf = null;
-        Key k = null;
-        try {
-            uf = UserFileConverter.convert(file);
-            k = UserKeyConverter.convert(key);
-        } catch (IOException ex) {
-            Logger.getLogger(UserFileRestController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        fileService.setFile(uf);    //Kreiranje i cuvanje fajla
-        
-        //---- Autentifikacija i autorizacija korisnika, provera role/paket usluge------
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User u = userService.findUserByEmail(auth.getName());
+    public ResponseEntity<?> getEncrypt(@RequestPart("file") MultipartFile file, @RequestPart("key") MultipartFile key) {
+         System.out.println("----file enc------");
+    UserFile uf = null;
+    Key k = null;
+    System.out.println("----------");
+    System.out.println(file);
+    System.out.println("----------");
+    System.out.println(key);
+    System.out.println("----------");
+    try {
+        uf = UserFileConverter.convert(file);
+        k = UserKeyConverter.convert(key);
+        System.out.println("---- uf ------");
+        System.out.println(uf);
+        System.out.println("----- k -----");
+        System.out.println(k);
 
-        Set<Role> roles = u.getRoles();
-        Role role = null;
+    } catch (IOException ex) {
+        Logger.getLogger(UserFileRestController.class.getName()).log(Level.SEVERE, null, ex);
+    }
 
-        for (Role r : roles) {
-            if (r.getRole().equals("FREE") || r.getRole().equals("STANDARD") || r.getRole().equals("PRO")) {
-                role = r;
-            }
-        }
+    fileService.setFile(uf); //Kreiranje i cuvanje fajla
 
-        System.out.println("Rola: " + role.getRole() + " Max akcije: " + role.getAction());
-        //------------------------------------------------------------------------------------
-        
-        float maxFile = role.getMaxSizeFile();          //Max. velicina fajla iz odabranog paket usluge
-        fileHandler.setMaxAction(role.getAction());     //setovanje max. akcije u istom vremenu
+    // Declare encryptedFile variable
+    UserFile encryptedFile = null;
 
-        // Provera velicine fajla
-        if (maxFile <= uf.getSize()) {
-            // Provera trenutnog brojaca akcija
-            if (fileHandler.canPerformAction()) {
-                fileHandler.setCurrAction(fileHandler.getCurrAction() + 1);
-                fileService.encryptFile(uf, k);  // Start enkripcije metode
-                System.out.println("CurrAction: " + fileHandler.getCurrAction());
-            } else {
-                return new ResponseEntity("U toku je maximalan broj akcija!", HttpStatus.TOO_MANY_REQUESTS);
-            }
-            fileHandler.setCurrAction(fileHandler.getCurrAction() - 1);
-            System.out.println("CurrAction: " + fileHandler.getCurrAction());
-            return new ResponseEntity(uf, HttpStatus.OK);
-        } else {
-            return new ResponseEntity("Prekoracena max. velicina fajla!", HttpStatus.FORBIDDEN);
-        }
+    //---- Autentifikacija i autorizacija korisnika, provera role/paket usluge------
+    // Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    // User u = userService.findUserByEmail(auth.getName());
+
+    // Set<Role> roles = u.getRoles();
+    // Role role = null;
+
+    // for (Role r : roles) {
+    //     if (r.getRole().equals("FREE") || r.getRole().equals("STANDARD") || r.getRole().equals("PRO")) {
+    //         role = r;
+    //     }
+    // }
+
+    // System.out.println("Rola: " + role.getRole() + " Max akcije: " + role.getAction());
+    //------------------------------------------------------------------------------------
+
+    //float maxFile = role.getMaxSizeFile();          //Max. velicina fajla iz odabranog paket usluge
+    //fileHandler.setMaxAction(role.getAction());     //setovanje max. akcije u istom vremenu
+
+    //float maxFile = 1000000000;          //Max. velicina fajla iz odabranog paket usluge
+    fileHandler.setMaxAction(10); //setovanje max. akcije u istom vremenu
+
+    // Provera velicine fajla
+    // if (maxFile <= uf.getSize()) {
+    // Provera trenutnog brojaca akcija
+    if (fileHandler.canPerformAction()) {
+        fileHandler.setCurrAction(fileHandler.getCurrAction() + 1);
+        encryptedFile = fileService.encryptFile(uf, k); // Start enkripcije metode
+        System.out.println("CurrAction: " + fileHandler.getCurrAction());
+    } else {
+        return new ResponseEntity("U toku je maximalan broj akcija!", HttpStatus.TOO_MANY_REQUESTS);
+    }
+    fileHandler.setCurrAction(fileHandler.getCurrAction() - 1);
+    System.out.println("CurrAction: " + fileHandler.getCurrAction());
+
+if (encryptedFile != null) {
+    return ResponseEntity.ok(encryptedFile);
+} else {
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Nastala je greska prilikom enkripcije fajla.");
+}
+
+    // } else {
+    //     return new ResponseEntity("Prekoracena max. velicina fajla!", HttpStatus.FORBIDDEN);
+    // }
     }
 
     @PostMapping("/user/home/fileDecrypt")
-    public ResponseEntity<UserFile> getDecrypt(@RequestPart("file") MultipartFile file, @RequestPart("key") MultipartFile key) {
+    public ResponseEntity<?> getDecrypt(@RequestPart("file") MultipartFile file, @RequestPart("key") MultipartFile key) {
 
         UserFile uf = null;
         Key k = null;
@@ -111,38 +133,33 @@ public class UserFileRestController {
         }
         
         //---- Autentifikacija i autorizacija korisnika, provera role/paket usluge------
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User u = userService.findUserByEmail(auth.getName());
+      
+        fileService.setFile(uf); //Kreiranje i cuvanje fajla
 
-        Set<Role> roles = u.getRoles();
-        Role role = null;
-
-        for (Role r : roles) {
-            if (r.getRole().equals("FREE") || r.getRole().equals("STANDARD") || r.getRole().equals("PRO")) {
-                role = r;
-            }
-        }
-
-        System.out.println("Rola: " + role.getRole() + " Max akcije: " + role.getAction());
+         UserFile decryptedFile = null;
         //-------------------------------------------------------------------------------------
         
-        float maxFile = role.getMaxSizeFile();
-        fileHandler.setMaxAction(role.getAction());
+        // float maxFile = role.getMaxSizeFile();
+        fileHandler.setMaxAction(10);
 
-        if (maxFile <= uf.getSize()) {
+
             if (fileHandler.canPerformAction()) {
                 fileHandler.setCurrAction(fileHandler.getCurrAction() + 1);
-                fileService.decryptFile(uf, k);
+                decryptedFile = fileService.decryptFile(uf, k);
                 System.out.println("CurrAction: " + fileHandler.getCurrAction());
             } else {
                 return new ResponseEntity("U toku je maximalan broj akcija!", HttpStatus.TOO_MANY_REQUESTS);
             }
             fileHandler.setCurrAction(fileHandler.getCurrAction() - 1);
             System.out.println("CurrAction: " + fileHandler.getCurrAction());
-            return new ResponseEntity(uf, HttpStatus.OK);
-        } else {
-            return new ResponseEntity("Prekoracena max. velicina fajla!", HttpStatus.FORBIDDEN);
-        }
+           // return new ResponseEntity(uf, HttpStatus.OK);
+         
+            if (decryptedFile != null) {
+                return ResponseEntity.ok(decryptedFile);
+            } else {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Nastala je greska prilikom dekripcije fajla.");
+            }
+
     }
 
 }

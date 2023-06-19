@@ -15,10 +15,11 @@ import java.nio.file.Path;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.springframework.stereotype.Service;
+import java.io.ByteArrayOutputStream;
 
 /**
  *
- * @author Mladen
+ * author Mladen
  */
 
 
@@ -45,9 +46,10 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public void encryptFile(UserFile f, Key k) {
+    public UserFile encryptFile(UserFile f, Key k) {
         try{
             System.out.println("Pocetak enkripcije...");
+            System.out.println(f.getFullName());
             FileInputStream fis = new FileInputStream(f.getFullName());
             FileOutputStream fos;
             
@@ -76,16 +78,35 @@ public class FileServiceImpl implements FileService {
             fis.close();
             fos.close();
             System.out.println("Datoteka je enkriptovana!");
-        }catch(IOException e){
+          
+            UserFile encryptedFile = new UserFile();
+            encryptedFile.setName("encrypted_" + f.getName());
+
+            // Read the encrypted file content and set it in the UserFile object
+            FileInputStream encryptedFis = new FileInputStream(f.getFullName() + ".vcEncrypt");
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            byte[] buffer = new byte[BUFF_SIZE];
+            int bytesRead;
+            while ((bytesRead = encryptedFis.read(buffer)) != -1) {
+                baos.write(buffer, 0, bytesRead);
+            }
+            encryptedFis.close();
+
+            encryptedFile.setData(baos.toByteArray());
+
+            return encryptedFile;
+        } catch(IOException e) {
             e.printStackTrace();
+            return null;
         }
     }
 
     @Override
-    public void decryptFile(UserFile f, Key k) {
+    public UserFile decryptFile(UserFile f, Key k) {
         System.out.println("Pocetak dekripcije...");
-        encryptFile(f, k);
+        UserFile decryptedFile = encryptFile(f, k);
         System.out.println("Datoteka je dekriptovana!");
+        return decryptedFile;
     }
     
 }

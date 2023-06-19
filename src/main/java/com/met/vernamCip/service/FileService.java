@@ -18,8 +18,8 @@ public interface FileService {
     
     public void setFile(UserFile f);
     
-    public void encryptFile(UserFile f, Key k);
+    public UserFile encryptFile(UserFile f, Key k);
     
-    public void decryptFile(UserFile f, Key k);
+    public UserFile decryptFile(UserFile f, Key k);
     
 }
